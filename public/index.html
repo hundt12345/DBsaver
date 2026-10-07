@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f6f1">
+    <meta name="description" content="Finde den günstigsten Bahnpreis für deine Strecke und deinen Reisetag – für eine erwachsene Person in der 2. Klasse.">
+    <title>DBsaver — Finde deinen besten Bahnpreis</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" type="module"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="DBsaver Startseite">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M8 6.5h9.6a8.4 8.4 0 0 1 0 16.8H8V6.5Z" stroke="currentColor" stroke-width="2.8" />
+            <path d="M13 12h5.3a3.3 3.3 0 0 1 0 6.6H13V12Z" fill="currentColor" />
+            <path d="m19.5 22.5 4 4M10 23l-3 3" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" />
+          </svg>
+        </span>
+        <span class="brand-name">DB<span>saver</span></span>
+      </a>
+
+      <nav class="header-nav" aria-label="Hauptnavigation">
+        <span class="source-indicator"><span class="live-dot"></span> Live mit bahn.de</span>
+        <a href="#so-gehts">So funktioniert’s <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-rule"></span> DER PREISFINDER FÜR DEINE BAHNFAHRT</p>
+          <h1 id="hero-title">Finde deinen<br><span>besten Fahrpreis.</span></h1>
+          <p class="hero-lede">Zwei Haltestellen, ein Reisetag – wir suchen den günstigsten verfügbaren Preis für deine einfache Fahrt.</p>
+
+          <div class="hero-highlights" aria-label="Suchumfang">
+            <div class="highlight-item">
+              <span class="highlight-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16M14 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="5" cy="12" r="2.3" fill="currentColor"/></svg>
+              </span>
+              <span>Einfache Fahrt</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M17 5.5a3 3 0 0 1 0 5.8M17.5 14a4.5 4.5 0 0 1 3 4.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </span>
+              <span>1 Erwachsener · 2. Klasse</span>
+            </div>
+          </div>
+
+          <div class="hero-note">
+            <span class="hero-note-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 18.5 9 5l6 14 5-13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="4" cy="18.5" r="2" fill="currentColor"/><circle cx="20" cy="6" r="2" fill="currentColor"/></svg>
+            </span>
+            <span><strong>Der ganze Tag im Blick.</strong><small>Die Abfrage vergleicht günstige Abfahrten am gewählten Reisetag.</small></span>
+          </div>
+        </div>
+
+        <section class="search-card" aria-labelledby="search-title">
+          <div class="card-heading">
+            <div>
+              <p class="card-kicker">DEIN NÄCHSTER TRIP</p>
+              <h2 id="search-title">Wohin soll’s gehen?</h2>
+            </div>
+            <span class="one-way-badge">Einfache Fahrt</span>
+          </div>
+
+          <form id="searchForm" novalidate>
+            <div class="route-box">
+              <div class="route-line" aria-hidden="true"><span></span><i></i><b></b></div>
+
+              <div class="station-entry">
+                <label for="fromInput">VON</label>
+                <input
+                  id="fromInput"
+                  name="from"
+                  type="search"
+                  placeholder="Abfahrtsbahnhof suchen"
+                  autocomplete="off"
+                  aria-autocomplete="list"
+                  aria-controls="fromOptions"
+                  aria-expanded="false"
+                  required
+                >
+                <div id="fromOptions" class="suggestions" role="listbox" aria-label="Abfahrtsbahnhöfe" hidden></div>
+              </div>
+
+              <button class="swap-button" id="swapButton" type="button" aria-label="Start und Ziel tauschen" title="Start und Ziel tauschen">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 7h12m0 0-3-3m3 3-3 3M17 17H5m0 0 3 3m-3-3 3-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+
+              <div class="station-entry station-entry--destination">
+                <label for="toInput">NACH</label>
+                <input
+                  id="toInput"
+                  name="to"
+                  type="search"
+                  placeholder="Zielbahnhof suchen"
+                  autocomplete="off"
+                  aria-autocomplete="list"
+                  aria-controls="toOptions"
+                  aria-expanded="false"
+                  required
+                >
+                <div id="toOptions" class="suggestions" role="listbox" aria-label="Zielbahnhöfe" hidden></div>
+              </div>
+            </div>
+
+            <div class="travel-options">
+              <label class="date-control" for="dateInput">
+                <span class="option-label">REISETAG</span>
+                <span class="date-value">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M7.5 3.5v3M16.5 3.5v3M4 9.5h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                  <input id="dateInput" name="date" type="date" required>
+                </span>
+              </label>
+
+              <div class="passenger-control" aria-label="Eine erwachsene Person, zweite Klasse">
+                <span class="option-label">REISENDE</span>
+                <span class="passenger-value">
+                  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.7"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0M17 5.5a3 3 0 0 1 0 5.8M17.5 14a4.5 4.5 0 0 1 3 4.3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                  <span>1 Erwachsener</span>
+                  <span class="class-chip">2. Klasse</span>
+                </span>
+              </div>
+            </div>
+
+            <p id="formError" class="form-error" role="alert" hidden></p>
+
+            <button class="search-button" id="searchButton" type="submit">
+              <span>Günstigsten Preis finden</span>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 12h14m0 0-5.5-5.5M18.5 12 13 17.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <p class="search-caption"><span class="caption-check" aria-hidden="true">✓</span> Kostenlos · ohne Anmeldung · direkt gesucht</p>
+          </form>
+
+          <div id="results" class="results" aria-live="polite" aria-atomic="true"></div>
+        </section>
+      </section>
+
+      <section class="how-section" id="so-gehts" aria-labelledby="how-title">
+        <div class="section-heading">
+          <p class="eyebrow"><span class="eyebrow-rule"></span> GANZ EINFACH</p>
+          <h2 id="how-title">Dein Preis. In drei Schritten.</h2>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card">
+            <span class="step-number">01</span>
+            <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="6.5" cy="6.5" r="2.5" stroke="currentColor" stroke-width="1.7"/><circle cx="17.5" cy="17.5" r="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 8.5 15.5 15.5" stroke="currentColor" stroke-width="1.7" stroke-dasharray="2.5 2.5" stroke-linecap="round"/></svg></span>
+            <h3>Strecke wählen</h3>
+            <p>Wähle deinen Start- und Zielbahnhof aus der aktuellen Bahnhofssuche.</p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">02</span>
+            <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5.5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 3.5v4M16 3.5v4M4 10h16M8 14h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+            <h3>Tag festlegen</h3>
+            <p>Wir vergleichen günstige Abfahrten für genau den Reisetag, den du planst.</p>
+          </article>
+          <article class="step-card">
+            <span class="step-number">03</span>
+            <span class="step-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3.5v17M16 7.5c0-1.7-1.6-3-4-3s-4 1.2-4 3c0 4.5 8 2 8 6.5 0 1.8-1.6 3.5-4 3.5s-4-1.5-4-3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+            <h3>Bestpreis entdecken</h3>
+            <p>Sieh den günstigsten gefundenen Preis und prüfe das Angebot anschließend bei der DB.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand brand--footer" href="/" aria-label="DBsaver Startseite">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M8 6.5h9.6a8.4 8.4 0 0 1 0 16.8H8V6.5Z" stroke="currentColor" stroke-width="2.8"/><path d="M13 12h5.3a3.3 3.3 0 0 1 0 6.6H13V12Z" fill="currentColor"/><path d="m19.5 22.5 4 4M10 23l-3 3" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></span>
+        <span class="brand-name">DB<span>saver</span></span>
+      </a>
+      <p>Preise sind eine Momentaufnahme – bitte vor dem Kauf bei der DB prüfen. Bahnhofsdaten-Fallback: <a href="https://github.com/derhuerst/db-hafas-stations" target="_blank" rel="noopener noreferrer">db-hafas-stations</a> (© Deutsche Bahn AG, CC BY 4.0; © OpenStreetMap-Mitwirkende, ODbL 1.0).</p>
+      <span class="footer-meta">Live-Preise von <a href="https://www.bahn.de/" target="_blank" rel="noopener noreferrer">bahn.de ↗</a></span>
+    </footer>
+  </body>
+</html>

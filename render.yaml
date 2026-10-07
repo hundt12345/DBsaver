@@ -1,0 +1,8 @@
+services:
+  - type: web
+    name: dbsaver
+    runtime: node
+    region: frankfurt
+    buildCommand: npm ci && npm run check && npm test
+    startCommand: npm start
+    healthCheckPath: /api/health
