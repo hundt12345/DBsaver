@@ -17,6 +17,7 @@ const suggestions = {
     stations: [],
     activeIndex: -1,
     fallback: false,
+    offlineNote: false,
   },
   to: {
     input: toInput,
@@ -26,11 +27,13 @@ const suggestions = {
     stations: [],
     activeIndex: -1,
     fallback: false,
+    offlineNote: false,
   },
 };
 
 const arrowIcon = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 12h14m0 0-5.5-5.5M18.5 12 13 17.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const stationIcon = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 20h10M8.5 16l-2 4m9-4 2 4M7 4.5h10a2 2 0 0 1 2 2v7a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3v-7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 8h8M8.5 13h.01M15.5 13h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const stopIcon = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 16.5V7a2.5 2.5 0 0 1 2.5-2.5h9A2.5 2.5 0 0 1 19 7v9.5M5 16.5h14M5 16.5 3.5 20m15.5-3.5L20.5 20M9 7.5h6M9.5 12h.01M14.5 12h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
 
 function escapeHtml(value) {
   return String(value ?? '').replace(/[&<>"']/g, (character) => ({
@@ -132,7 +135,12 @@ function renderStationSuggestions(which, stations) {
   if (context.fallback) {
     const note = document.createElement('div');
     note.className = 'suggestion-message';
-    note.textContent = 'Offline-Bahnhofsliste · Datenstand kann abweichen';
+    note.textContent = 'Haltestellenliste (offline) · alle Bahnhöfe, S-/U-Bahn, Bus und Tram';
+    context.list.append(note);
+  } else if (context.offlineNote) {
+    const note = document.createElement('div');
+    note.className = 'suggestion-message';
+    note.textContent = 'Ergänzt um die vollständige Haltestellenliste (inkl. Bus, Tram und U-Bahn)';
     context.list.append(note);
   }
 
@@ -146,7 +154,7 @@ function renderStationSuggestions(which, stations) {
 
     const icon = document.createElement('span');
     icon.className = 'suggestion-icon';
-    icon.innerHTML = stationIcon;
+    icon.innerHTML = station.category === 'local' || station.label === 'Bus/Tram' ? stopIcon : stationIcon;
 
     const name = document.createElement('span');
     name.className = 'suggestion-name';
@@ -154,7 +162,7 @@ function renderStationSuggestions(which, stations) {
 
     const meta = document.createElement('span');
     meta.className = 'suggestion-meta';
-    meta.textContent = context.fallback ? 'Offline' : 'Bahnhof';
+    meta.textContent = station.label || 'Haltestelle';
 
     option.append(icon, name, meta);
     option.addEventListener('mousedown', (event) => event.preventDefault());
@@ -180,6 +188,7 @@ async function fetchStationSuggestions(which, query) {
     if (!response.ok) throw new Error(payload.error || 'Bahnhofssuche fehlgeschlagen.');
     if (context.input.value.trim() !== query) return;
     context.fallback = Boolean(payload.fallback);
+    context.offlineNote = Boolean(payload.sources?.offline && !payload.fallback);
     renderStationSuggestions(which, Array.isArray(payload.stations) ? payload.stations : []);
   } catch (error) {
     if (error.name === 'AbortError') return;
@@ -302,14 +311,16 @@ function formatChanges(changes) {
 }
 
 function renderLoading() {
-  resultsElement.innerHTML = '<div class="results-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Wir fragen den Tagesbestpreis bei bahn.de ab und vergleichen die gefundenen Verbindungen …</span></div>';
+  resultsElement.innerHTML = '<div class="results-loading"><span class="loading-spinner" aria-hidden="true"></span><span>Wir fragen den Tagesbestpreis bei der DB ab und vergleichen die gefundenen Verbindungen …</span></div>';
 }
 
-function renderError(message) {
+function renderError(message, details) {
   resultsElement.innerHTML = `
     <div class="result-error">
       <p class="result-message-title">Live-Auskunft gerade nicht verfügbar</p>
       <p class="result-message-copy">${escapeHtml(message)}</p>
+      ${details ? `<p class="result-message-detail">${escapeHtml(details)}</p>` : ''}
+      <a class="result-retry-link" href="/api/status" target="_blank" rel="noopener noreferrer">Technischen Status prüfen ↗</a>
     </div>`;
 }
 
@@ -356,8 +367,11 @@ function renderResults(data, selection, date) {
   const otherOffers = offers.slice(1, 5);
   const queriedAt = data.queriedAt ? new Date(data.queriedAt) : null;
   const queriedLabel = queriedAt && !Number.isNaN(queriedAt.getTime())
-    ? `Zuletzt live abgefragt um ${new Intl.DateTimeFormat('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' }).format(queriedAt)} Uhr.`
-    : 'Live abgefragt bei bahn.de.';
+    ? `Zuletzt live abgefragt um ${new Intl.DateTimeFormat('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' }).format(queriedAt)} Uhr über ${data.sourceLabel || 'die DB'}.`
+    : `Live abgefragt über ${data.sourceLabel || 'die DB'}.`;
+  const stationNote = data.stationAdjusted
+    ? '<p class="result-message-detail">Eine gewählte Haltestelle hat keine eigene Bahnhofsnummer – die Abfrage lief über den zugehörigen DB-Bahnhof.</p>'
+    : '';
 
   resultsElement.innerHTML = `
     <div class="result-heading-line">
@@ -407,6 +421,7 @@ function renderResults(data, selection, date) {
         <div class="offer-list">${otherOffers.map(renderOfferRow).join('')}</div>
       </section>` : ''}
 
+    ${stationNote}
     <p class="queried-at">${escapeHtml(queriedLabel)} Der endgültige Preis kann sich ändern; maßgeblich ist das Angebot auf bahn.de.</p>`;
 }
 
@@ -466,11 +481,15 @@ form.addEventListener('submit', async (event) => {
       }),
     });
     const payload = await response.json();
-    if (!response.ok) throw new Error(payload.error || 'Die Preissuche ist fehlgeschlagen.');
+    if (!response.ok) {
+      const error = new Error(payload.error || 'Die Preissuche ist fehlgeschlagen.');
+      error.details = payload.details;
+      throw error;
+    }
     renderResults(payload, search, search.date);
     resultsElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   } catch (error) {
-    renderError(error.message || 'Bitte prüfe deine Internetverbindung und versuche es erneut.');
+    renderError(error.message || 'Bitte prüfe deine Internetverbindung und versuche es erneut.', error.details);
   } finally {
     searchButton.disabled = false;
     searchButton.removeAttribute('aria-busy');

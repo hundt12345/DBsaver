@@ -1,21 +1,22 @@
 {
   "name": "dbsaver",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "description": "Finde den Tagesbestpreis für eine einfache Bahnverbindung.",
   "engines": {
-    "node": ">=20.10 <25"
+    "node": ">=22.11 <25"
   },
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "check": "node --check server.js && node --check src/search-utils.js && node --check public/app.js",
+    "check": "node --check server.js && node --check src/search-utils.js && node --check src/stations-offline.js && node --check src/station-merge.js && node --check src/db-transport.js && node --check src/db-clients.js && node --check public/app.js",
     "test": "node --test"
   },
   "dependencies": {
     "db-hafas-stations": "^2.0.0",
     "db-vendo-client": "6.11.3",
-    "p-throttle": "^7.0.0"
+    "p-throttle": "^7.0.0",
+    "qs": "^6.14.0"
   }
 }
