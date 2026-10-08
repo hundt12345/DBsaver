@@ -6,3 +6,7 @@ services:
     buildCommand: npm ci && npm run check && npm test
     startCommand: npm start
     healthCheckPath: /api/health
+    # Jeder Push auf den hier verbundenen Branch deployt automatisch.
+    # Wer das nicht möchte: autoDeployTrigger auf `off` setzen (oder im
+    # Render-Dashboard unter Settings → Auto-Deploy abschalten).
+    autoDeployTrigger: commit

@@ -527,6 +527,7 @@ input:focus-visible {
 }
 
 .suggestion-meta {
+  flex: 0 0 auto;
   margin-left: auto;
   color: #85948b;
   font-size: 9px;
@@ -754,6 +755,13 @@ input:focus-visible {
   color: var(--muted-dark);
   font-size: 12px;
   line-height: 1.6;
+}
+
+.result-message-detail {
+  margin: 7px 0 0;
+  color: #85948b;
+  font-size: 11px;
+  line-height: 1.55;
 }
 
 .result-retry-link {
