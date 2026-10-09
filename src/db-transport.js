@@ -7,11 +7,11 @@ import { checkIfResponseIsOk } from 'db-vendo-client/lib/request.js';
 
 const execFileAsync = promisify(execFile);
 
-// DB's edge (Akamai) blocks plain server-side requests by TLS fingerprint:
-// `452 OPS_BLOCKED` / `403 Access Denied`. Two things help and are applied here:
-//   1. a browser-like cipher order plus a "classic" TLS supported_groups order,
-//   2. an optional curl fallback for the cases where Node's OpenSSL handshake
-//      still gets classified as a bot.
+// DB's edge (Akamai) blocks server-side requests with `452 OPS_BLOCKED` /
+// `403 Access Denied`, apparently based on the TLS fingerprint. The settings
+// below (TLS 1.2, browser-like cipher and group order, optional curl fallback)
+// are a workaround that is not reliable: on Render (Node 24, OpenSSL 3.5) both
+// upstreams were still blocked on 2026-10-09.
 // See https://github.com/public-transport/db-vendo-client/issues/46 (and #50/#53).
 const BAHN_HOSTS = new Set([
   'int.bahn.de',
