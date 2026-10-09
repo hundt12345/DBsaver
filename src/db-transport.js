@@ -78,6 +78,7 @@ export function getTlsInfo() {
   tlsInfo = {
     node: process.version,
     openssl: process.versions.openssl,
+    maxVersion: 'TLSv1.2',
     supportedGroups,
     activeGroups: supportedGroups[0] ?? null,
   };
@@ -92,6 +93,9 @@ export function getBahnAgent() {
       maxSockets: 4,
       ALPNProtocols: ['http/1.1'],
       ciphers: BAHN_CHROMIUM_CIPHERS,
+      // Force TLS 1.2 to avoid DB's Akamai edge blocking TLS 1.3 handshakes
+      // with OPS_BLOCKED (same workaround as sparpreis.guru).
+      maxVersion: 'TLSv1.2',
       ...(activeGroups ? { ecdhCurve: activeGroups } : {}),
     });
   }

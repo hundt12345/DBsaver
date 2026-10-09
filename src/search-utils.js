@@ -188,10 +188,11 @@ export function scoreStationMatch(candidate, normalizedQuery, tokens = tokenizeS
   if (tokens.length === 0) return -Infinity;
   if (!tokens.every((token) => nameContainsToken(normalizedName, token))) return -Infinity;
 
-  const weight = Number.isFinite(candidate.weight) && candidate.weight > 0 ? candidate.weight : 0;
-  // `weight` is a popularity proxy from the DB station directory: big hubs are
-  // ranked far higher, but a strong name match still wins (see the bonuses below).
-  let score = Math.log10(1 + weight) * 1_200;
+  const rawWeight = Number.isFinite(candidate.weight) && candidate.weight > 0 ? candidate.weight : 0;
+  // `weight` is a popularity proxy from the DB station directory. Cap it to
+  // prevent major hubs from completely dominating over local transport stops.
+  const weight = Math.min(rawWeight, 1000);
+  let score = Math.log10(1 + weight) * 600;
 
   if (normalizedName === normalizedQuery) score += 10_000_000;
   else if (normalizedName.startsWith(normalizedQuery)) score += 1_000_000;
@@ -199,8 +200,9 @@ export function scoreStationMatch(candidate, normalizedQuery, tokens = tokenizeS
 
   score += countTokensAtWordStart(normalizedName, tokens) * 2_500;
 
-  if (candidate.flags & STATION_FLAG.rail) score += 900;
-  if (candidate.flags & STATION_FLAG.longDistance) score += 500;
+  if (candidate.flags & STATION_FLAG.rail) score += 200;
+  if (candidate.flags & STATION_FLAG.longDistance) score += 100;
+  if (candidate.flags & STATION_FLAG.local) score += 150;
   if (candidate.source === 'live') score += 20_000;
 
   score -= normalizedName.length * 8;
